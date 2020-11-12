@@ -9,12 +9,16 @@ execution is possible (notice that if you re-run the script there should be less
 
 If deleted properties are to be restored, a discovery should be run reseting the catalog used.
 
-``` .virtualenvs/tap-zendesk/bin/tap-zendesk --config zendesk_config.json --discover >> file_name.json ```
+```bash 
+.virtualenvs/tap-zendesk/bin/tap-zendesk --config zendesk_config.json --discover >> file_name.json 
+```
 
 ### Running the script
 
 The script is runned from the terminal with the following commands:
 
-``` python stream_selector.py file_path1 file_path2 ... file_pathn ```
+``` bash
+python stream_selector.py file_path1 file_path2 ... file_pathn 
+```
 
-Multiple files can be 
+Multiple files can be treated within the same execution.

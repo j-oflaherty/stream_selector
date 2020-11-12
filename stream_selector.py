@@ -20,7 +20,7 @@ def stream_picker(streams: list) -> list:
     for i in range(0, len(streams)):
         print(str(i)+'-', streams[i]['stream'])
     print('\nPlease enter the number(s) of the stream(s) you want to select separated by a coma (,)')
-    user_input = set(input().split(','))
+    user_input = set(input().strip(' ').split(','))
     selected_streams = list(user_input)
     selected_streams.sort()
     return selected_streams
@@ -58,8 +58,7 @@ def schema_treatment(stream):
             i += 1
 
         nums = set(input('Enter the numbers of the properties yo want to DROP from the stream separated by a coma (,'
-                         '): \n').split(','))
-
+                         '): \n').strip(' ').split(','))
         if len(nums) > 0 and not('' in nums):
             print('\nYou\'ve selected the following properties to be deleted:')
             nums = list(nums)
@@ -75,7 +74,7 @@ def schema_treatment(stream):
         confirm = res.lower() == 'y'
 
     if len(nums) > 0 and not('' in nums):
-        nums.sort(reverse=True)     #Borramos del último al primero para que no se modifiquen los indices
+        nums.sort(reverse=True)  # Borramos del último al primero para que no se modifiquen los indices
         for i in nums:
             stream['schema']['properties'].pop(key_numbers[i])
             j = 0
@@ -93,7 +92,12 @@ def schema_treatment(stream):
 
 
 def main(file_path):
-    streams = get_streams(file_path)
+    try:
+        streams = get_streams(file_path)
+    except json.decoder.JSONDecodeError:
+        print('An error occurred when trying to decode the file. Please check that the file contains a valid json '
+              'structure')
+        return None  # end execution on error
 
     confirm = False
     while not confirm:
@@ -114,8 +118,21 @@ def main(file_path):
         f.write(json.dumps(catalog, indent=2, sort_keys=True))
 
 
+def welcome():
+    print(r'''
+███████╗████████╗██████╗ ███████╗ █████╗ ███╗   ███╗    ███████╗███████╗██╗     ███████╗ ██████╗████████╗ ██████╗ ██████╗ 
+██╔════╝╚══██╔══╝██╔══██╗██╔════╝██╔══██╗████╗ ████║    ██╔════╝██╔════╝██║     ██╔════╝██╔════╝╚══██╔══╝██╔═══██╗██╔══██╗
+███████╗   ██║   ██████╔╝█████╗  ███████║██╔████╔██║    ███████╗█████╗  ██║     █████╗  ██║        ██║   ██║   ██║██████╔╝
+╚════██║   ██║   ██╔══██╗██╔══╝  ██╔══██║██║╚██╔╝██║    ╚════██║██╔══╝  ██║     ██╔══╝  ██║        ██║   ██║   ██║██╔══██╗
+███████║   ██║   ██║  ██║███████╗██║  ██║██║ ╚═╝ ██║    ███████║███████╗███████╗███████╗╚██████╗   ██║   ╚██████╔╝██║  ██║
+╚══════╝   ╚═╝   ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝    ╚══════╝╚══════╝╚══════╝╚══════╝ ╚═════╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝
+''')
+    sleep(1)
+    print('Welcome to the stream selector. Follow the instructions as they appear on the screen')
+
+
 if __name__ == '__main__':
-    print('-----------Welcome to the stream treatment script------------')
+    welcome()
     sleep(2)
     file_paths = sys.argv
     if len(file_paths) == 1:
@@ -131,5 +148,5 @@ if __name__ == '__main__':
                 main(path)
                 sleep(2)
             else:
-                print('File path {} wasn\'t found. Please check your inputs.')
-                print('This file is located at {}\n\n'.format(os.path.curdir))
+                print('File path {} wasn\'t found. Please check your inputs.'.format(path))
+                print('Remember the top directory is where you are executing this file from')
