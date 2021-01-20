@@ -1,7 +1,7 @@
 import json
 import pprint
 
-import sys #get the arguments from cmd
+import sys  # get the arguments from cmd
 import os
 from time import sleep
 
@@ -118,6 +118,19 @@ def main(file_path):
         f.write(json.dumps(catalog, indent=2, sort_keys=True))
 
 
+def file_selector(files: list):
+    print("Here are the files available for treatment: ")
+    sleep(1)
+    i = 0
+    for file in files:
+        print(str(i) + '-', file)
+        i += 1
+    print('Please enter the number corresponding to the file you want to treat. If the file(s) you '
+          'want to treat don\'t appear please check that the folder path provided is correct')
+    index = int(input('File number: '))
+    return files[index]
+
+
 def welcome():
     print(r'''
 ███████╗████████╗██████╗ ███████╗ █████╗ ███╗   ███╗    ███████╗███████╗██╗     ███████╗ ██████╗████████╗ ██████╗ ██████╗ 
@@ -134,19 +147,28 @@ def welcome():
 if __name__ == '__main__':
     welcome()
     sleep(2)
-    file_paths = sys.argv
-    if len(file_paths) == 1:
-        print('You forgot to specify the files you want to treat')
+    folder_path = sys.argv
+    if len(folder_path) == 1:
+        print('You forgot to specify the folder where the streams are.')
         print('Remember to execute the script with the following syntax:')
-        print('~$ python file_path[1] file_path[2] ... file_path[n]')
+        print('     ~$ python folder_path')
+        print('If you are in the currently in the folder folder_path="."')
     else:
-        file_paths = file_paths[1:]
-        for path in file_paths:
-            print('\nStarting treatment on {}\n'.format(path))
-            sleep(2)
-            if os.path.exists(path):
-                main(path)
+        folder_path = folder_path[1]
+        if not os.path.exists(folder_path):
+            print('There isn\'t a folder with the path  {}/{}'.format(os.path.abspath(os.curdir), folder_path) )
+            print('This script is beign executed from ' + os.path.abspath(os.curdir))
+
+        else:
+            available_files = os.listdir(folder_path)
+            treatment: bool = True
+            while treatment:
+                file_path = folder_path + '/' + file_selector(available_files)
+                print(file_path)
+                print('\nStarting treatment on {}\n'.format(file_path[len(folder_path):]))
                 sleep(2)
-            else:
-                print('File path {} wasn\'t found. Please check your inputs.'.format(path))
-                print('Remember the top directory is where you are executing this file from')
+                main(file_path)
+                sleep(2)
+                treatment = input('Do you want to treat another file?[y/N]: ').lower() == 'y'
+                print('\n\n')
+
