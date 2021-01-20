@@ -18,7 +18,7 @@ If deleted properties are to be restored, a discovery should be run reseting the
 The script is runned from the terminal with the following commands:
 
 ``` bash
-python stream_selector.py file_path1 file_path2 ... file_pathn 
+python stream_selector.py folder_path 
 ```
 
 Multiple files can be treated within the same execution.
